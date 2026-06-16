@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 // SearchFilter Component outside of App component to avoid re-creation on every render
 const SearchFilter = ({ search, setSearch }) => {
@@ -73,13 +74,18 @@ const Persons = ({ search, persons }) => {
 const App = () => {
   const [search, setSearch] = useState("");
   const [newName, setNewName] = useState(["", ""]);
+  //const [notes, setNotes] = useState([]);
+  const [persons, setPersons] = useState([]);
 
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then((response) => {
+      console.log("promise fulfilled");
+      console.log("data from the server", response.data);
+      setPersons(response.data);
+    });
+  }, []);
+
+  console.log("persons state", persons);
 
   const checkIfNameExists = (name) => {
     return persons.some((person) => person.name === name);
@@ -92,13 +98,18 @@ const App = () => {
       alert(`${newName[0]} is already added to phonebook`);
       return;
     }
-    setPersons(
-      persons.concat({
-        name: newName[0],
-        number: newName[1],
-        id: persons.length + 1,
-      }),
-    );
+
+    const personObject = {
+      name: newName[0],
+      number: newName[1],
+    };
+
+    axios
+      .post("http://localhost:3001/persons", personObject)
+      .then((response) => {
+        console.log("data from the server", response.data);
+        setPersons(persons.concat(response.data));
+      });
 
     // CLear the input fields
     setNewName(["", ""]);
