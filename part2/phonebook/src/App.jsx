@@ -88,11 +88,41 @@ const App = () => {
     return persons.some((person) => person.name === name);
   };
 
+  const checkIfNumberExists = (number) => {
+    return persons.some((person) => person.number === number);
+  };
+
   const addName = (event) => {
     event.preventDefault();
     console.log("button clicked");
+
     if (checkIfNameExists(newName[0])) {
-      alert(`${newName[0]} is already added to phonebook`);
+      const existingPerson = persons.find(
+        (person) => person.name === newName[0],
+      );
+      const confirmUpdate = window.confirm(
+        `${newName[0]} is already added to phonebook. Do you want to update the number?`,
+      );
+
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newName[1] };
+        numbersService
+          .updatePerson(existingPerson.id, updatedPerson)
+          .then((response) => {
+            console.log("data from the server", response.data);
+            setPersons(
+              persons.map((person) =>
+                person.id !== existingPerson.id ? person : response.data,
+              ),
+            );
+            setNewName(["", ""]); // Clear the input fields after updating
+          });
+      }
+      return;
+    }
+
+    if (checkIfNumberExists(newName[1])) {
+      alert(`${newName[1]} is already added to phonebook.`);
       return;
     }
 
