@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import numbersService from "./services/numbers.js"; // Import the numbersService
 
 // SearchFilter Component outside of App component to avoid re-creation on every render
 const SearchFilter = ({ search, setSearch }) => {
@@ -78,7 +78,7 @@ const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    numbersService.getAll().then((response) => {
       console.log("promise fulfilled");
       console.log("data from the server", response.data);
       setPersons(response.data);
@@ -104,12 +104,10 @@ const App = () => {
       number: newName[1],
     };
 
-    axios
-      .post("http://localhost:3001/persons", personObject)
-      .then((response) => {
-        console.log("data from the server", response.data);
-        setPersons(persons.concat(response.data));
-      });
+    numbersService.create(personObject).then((response) => {
+      console.log("data from the server", response.data);
+      setPersons(persons.concat(response.data));
+    });
 
     // CLear the input fields
     setNewName(["", ""]);
