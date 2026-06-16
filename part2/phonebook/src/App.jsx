@@ -43,30 +43,27 @@ const PersonForm = ({ newName, setNewName, addName }) => {
 
 // Persons Component outside of App component to avoid re-creation on every render
 
-const Persons = ({ search, persons }) => {
+const Persons = ({ search, persons, deletePerson }) => {
+  const personsToShow =
+    search === ""
+      ? persons
+      : persons.filter((person) =>
+          person.name.toLowerCase().includes(search.toLowerCase()),
+        );
+
   return (
     <ul style={{ padding: 0, margin: 0 }}>
-      {search === ""
-        ? persons.map((person) => (
-            <li
-              style={{ listStyleType: "none", margin: 0, padding: 0 }}
-              key={person.name}
-            >
-              {person.name}: {person.number}
-            </li>
-          ))
-        : persons
-            .filter((person) =>
-              person.name.toLowerCase().includes(search.toLowerCase()),
-            )
-            .map((person) => (
-              <li
-                style={{ listStyleType: "none", margin: 0, padding: 0 }}
-                key={person.name}
-              >
-                {person.name}: {person.number}
-              </li>
-            ))}
+      {personsToShow.map((person) => (
+        <li
+          style={{ listStyleType: "none", margin: 0, padding: 0 }}
+          key={person.name}
+        >
+          {person.name}: {person.number}{" "}
+          {/* Add delete button for each person */}
+          {console.log("person id", person.id)}
+          <button onClick={() => deletePerson(person.id)}>delete</button>
+        </li>
+      ))}
     </ul>
   );
 };
@@ -113,6 +110,12 @@ const App = () => {
     setNewName(["", ""]);
   };
 
+  const deletePerson = (id) => {
+    numbersService.deletePerson(id).then(() => {
+      setPersons(persons.filter((person) => person.id !== id));
+    });
+  };
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -125,7 +128,7 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons search={search} persons={persons} />
+      <Persons search={search} persons={persons} deletePerson={deletePerson} />
     </div>
   );
 };

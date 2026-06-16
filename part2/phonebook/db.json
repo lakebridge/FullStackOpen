@@ -1,19 +1,9 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": "1"
-    },
-    {
       "name": "Ada Lovelace",
       "number": "39-44-5323523",
       "id": "2"
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": "3"
     },
     {
       "name": "Mary Poppendieck",
@@ -21,9 +11,9 @@
       "id": "4"
     },
     {
-      "name": "yassine Lazio",
-      "number": "078876677",
-      "id": "WcZtrk8_H40"
+      "name": "yassine lazio",
+      "number": "0998876",
+      "id": "8d8T2G40d9Q"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
