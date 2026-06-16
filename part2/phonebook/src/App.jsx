@@ -111,9 +111,16 @@ const App = () => {
   };
 
   const deletePerson = (id) => {
-    numbersService.deletePerson(id).then(() => {
-      setPersons(persons.filter((person) => person.id !== id));
-    });
+    const person = persons.find((p) => p.id === id);
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${person.name}?`,
+    );
+
+    if (confirmDelete) {
+      numbersService.deletePerson(id).then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
   };
 
   return (
