@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
 import numbersService from "./services/numbers.js"; // Import the numbersService
+import {
+  Notification,
+  ErrorNotification,
+} from "../components/notifications.jsx"; // Import the Notification and ErrorNotification components
+import "./index.css";
 
 // SearchFilter Component outside of App component to avoid re-creation on every render
 const SearchFilter = ({ search, setSearch }) => {
@@ -73,6 +78,8 @@ const App = () => {
   const [newName, setNewName] = useState(["", ""]);
   //const [notes, setNotes] = useState([]);
   const [persons, setPersons] = useState([]);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     numbersService.getAll().then((response) => {
@@ -116,6 +123,14 @@ const App = () => {
               ),
             );
             setNewName(["", ""]); // Clear the input fields after updating
+            console.log("Updated person's number:", response.data);
+            // Show a notification for the update
+            setNotificationMessage(
+              `Updated ${newName[0]}'s number successfully.`,
+            );
+            setTimeout(() => {
+              setNotificationMessage("");
+            }, 3000);
           });
       }
       return;
@@ -134,6 +149,10 @@ const App = () => {
     numbersService.create(personObject).then((response) => {
       console.log("data from the server", response.data);
       setPersons(persons.concat(response.data));
+      setNotificationMessage(`Added ${newName[0]} successfully.`); // Show a notification for the addition
+      setTimeout(() => {
+        setNotificationMessage("");
+      }, 5000);
     });
 
     // CLear the input fields
@@ -147,15 +166,34 @@ const App = () => {
     );
 
     if (confirmDelete) {
-      numbersService.deletePerson(id).then(() => {
-        setPersons(persons.filter((person) => person.id !== id));
-      });
+      numbersService
+        .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+          setNotificationMessage(`Deleted ${person.name} successfully.`); // Show a notification for the deletion
+          setTimeout(() => {
+            setNotificationMessage("");
+          }, 5000);
+        })
+        .catch((error) => {
+          console.error("Error deleting person:", error);
+          setErrorMessage(
+            `Failed to delete ${person.name}. It may have already been removed from the server.`,
+          );
+          setTimeout(() => {
+            setErrorMessage("");
+          }, 5000);
+        });
     }
   };
 
   return (
     <div>
       <h1>Phonebook</h1>
+
+      <Notification message={notificationMessage} />
+
+      <ErrorNotification message={errorMessage} />
 
       <SearchFilter search={search} setSearch={setSearch} />
 
