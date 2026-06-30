@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "http://localhost:3001/api/persons"; // Update the base URL to match the new server port
+const baseUrl = "api/persons"; // Update the base URL to match the new server port
 
 const getAll = () => {
   return axios.get(baseUrl);
