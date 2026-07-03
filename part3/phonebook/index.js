@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path");
 
 app.use(cors());
 
@@ -53,11 +54,14 @@ app.get("/api/persons", (request, response) => {
 app.get("/README", (request, response) => {
   const readmePath = path.join(__dirname, "../../README.md");
 
-  console.log("__dirname:", __dirname);
-  console.log("process.cwd():", process.cwd());
   console.log("README path:", readmePath);
-  console.log("README exists:", fs.existsSync(readmePath));
-  response.sendFile(__dirname + "/README.md");
+
+  response.sendFile(readmePath, (error) => {
+    if (error) {
+      console.log("sendFile error:", error.message);
+      response.status(500).send("Could not send README file");
+    }
+  });
 });
 
 app.get("/info", (request, response) => {
