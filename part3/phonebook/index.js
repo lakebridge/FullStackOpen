@@ -50,6 +50,10 @@ app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
 
+app.get("/README", (request, response) => {
+  response.sendFile(__dirname + "/README.md");
+});
+
 app.get("/info", (request, response) => {
   const date = new Date();
   response.send(
