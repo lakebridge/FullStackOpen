@@ -51,6 +51,12 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/README", (request, response) => {
+  const readmePath = path.join(__dirname, "../../README.md");
+
+  console.log("__dirname:", __dirname);
+  console.log("process.cwd():", process.cwd());
+  console.log("README path:", readmePath);
+  console.log("README exists:", fs.existsSync(readmePath));
   response.sendFile(__dirname + "/README.md");
 });
 
