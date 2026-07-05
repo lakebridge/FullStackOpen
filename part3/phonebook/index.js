@@ -4,7 +4,19 @@ const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
 
+require("dotenv").config();
+const Person = require("./models/person");
+
 app.use(cors());
+//app.use(morgan("dev")); // already defined in the next line with custom format
+
+morgan.token("body", (req) => JSON.stringify(req.body));
+
+app.use(
+  morgan(
+    `\n:method :url :status :res[content-length] - :response-time ms :body`,
+  ),
+);
 
 persons = [
   {
@@ -32,23 +44,19 @@ persons = [
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
-app.use(morgan("dev"));
 app.use(express.static("dist"));
-
-morgan.token("body", (req) => JSON.stringify(req.body));
-
-app.use(
-  morgan(
-    `Server running on port ${PORT} \n:method :url :status :res[content-length] - :response-time ms :body`,
-  ),
-);
 
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  // response.json(persons);
+  Person.find({}).then((people) => {
+    console.log("phonebook:");
+    response.json(people);
+    mongoose.connection.close();
+  });
 });
 
 app.get("/README", (request, response) => {
