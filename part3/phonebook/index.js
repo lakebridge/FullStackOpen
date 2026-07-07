@@ -104,7 +104,7 @@ app.get("/api/persons/:id", (request, response, next) => {
 app.delete("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
 
-  Person.findByIdAndRemove(id)
+  Person.findByIdAndDelete(id)
     .then((result) => {
       if (result) {
         response.status(204).end();
