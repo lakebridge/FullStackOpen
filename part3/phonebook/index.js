@@ -18,29 +18,6 @@ app.use(
   ),
 );
 
-persons = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
@@ -74,9 +51,12 @@ app.get("/README", (request, response) => {
 
 app.get("/info", (request, response) => {
   const date = new Date();
-  response.send(
-    `<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`,
-  );
+  Person.find({}).then((people) => {
+    const personCount = people.length;
+    response.send(
+      `<p>Phonebook has info for ${personCount} people</p><p>${date}</p>`,
+    );
+  });
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -115,7 +95,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
   if (!body.name || !body.number) {
@@ -137,9 +117,33 @@ app.post("/api/persons", (request, response) => {
     number: body.number,
   });
 
-  newPerson.save().then(() => {
-    response.json(newPerson);
-  });
+  newPerson
+    .save()
+    .then(() => {
+      response.json(newPerson);
+    })
+    .catch((error) => next(error));
+});
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id;
+  const body = request.body;
+
+  Person.findById(id)
+    .then((person) => {
+      if (!person) {
+        return response.status(404).json({ error: "Person not found" });
+      }
+
+      person.name = body.name;
+      person.number = body.number;
+
+      return person.save();
+    })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 // Error handling middleware
@@ -150,10 +154,19 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: "malformatted id" });
   }
 
+  if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
+  }
+
   next(error);
 };
 
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
 // this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(unknownEndpoint);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

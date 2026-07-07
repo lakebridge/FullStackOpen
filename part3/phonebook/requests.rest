@@ -6,7 +6,7 @@ GET http://localhost:3001/api/persons
 
 ###
 
-GET http://localhost:3001/api/persons/1
+GET http://localhost:3001/api/persons/6a48de58edb56c77dcac279e
 
 ###
 
@@ -37,3 +37,14 @@ Content-Type: application/json
 ###
 
 GET http://localhost:3001/README
+
+
+### 
+
+PUT http://localhost:3001/api/persons/6a48df595f63a55b740e7f72
+Content-Type: application/json  
+
+{
+  "name": "Updated Name",
+  "number": "111-222-3333"
+}
