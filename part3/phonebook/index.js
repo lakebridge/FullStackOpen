@@ -32,7 +32,7 @@ app.get("/api/persons", (request, response) => {
   Person.find({}).then((people) => {
     console.log("phonebook:");
     response.json(people);
-    mongoose.connection.close();
+    //mongoose.connection.close(); - this caused the crash of the server after the first request, so I commented it out. The connection should remain open for subsequent requests.
   });
 });
 
