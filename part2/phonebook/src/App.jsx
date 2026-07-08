@@ -146,17 +146,30 @@ const App = () => {
       number: newName[1],
     };
 
-    numbersService.create(personObject).then((response) => {
-      console.log("data from the server", response.data);
-      setPersons(persons.concat(response.data));
-      setNotificationMessage(`Added ${newName[0]} successfully.`); // Show a notification for the addition
-      setTimeout(() => {
-        setNotificationMessage("");
-      }, 5000);
-    });
+    // console.log("running before numbersService.create");
 
-    // CLear the input fields
-    setNewName(["", ""]);
+    numbersService
+      .create(personObject)
+      .then((response) => {
+        console.log("data from the server", response.data);
+        setPersons(persons.concat(response.data));
+        setNotificationMessage(`Added ${newName[0]} successfully.`); // Show a notification for the addition
+        setTimeout(() => {
+          setNotificationMessage("");
+        }, 5000);
+        // CLear the input fields
+        setNewName(["", ""]);
+      })
+      .catch((error) => {
+        console.error("Error adding person:", error.response.data.error);
+        setErrorMessage(
+          `Failed to add ${newName[0]}. ${error.response.data.error}`,
+        );
+        setTimeout(() => {
+          setErrorMessage("");
+          setNewName(["", ""]);
+        }, 5000);
+      });
   };
 
   const deletePerson = (id) => {
